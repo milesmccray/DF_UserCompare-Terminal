@@ -1,5 +1,7 @@
 import requests
 import sys
+import levelsethandler
+import finduser
 from termcolor import colored
 from tabulate import tabulate
 
@@ -16,70 +18,17 @@ from tabulate import tabulate
 # - Make a 'loading' bar during a request?
 # - Split main.py into different documents. Like a "term drawing document" etc
 
+
 def nav_choice(string):
 	x = colored(string, attrs=['bold', 'underline'])
 	return x
 
 
-def choose_level_set():
-	level_set = ['1) Standard Levels', '2) Community Map Pack',
-				 '3) Dustforce Custom League', '4) Backwards Dustforce',
-				 '5) Nuclear Zone', '6) Rotated Clockwise',
-				 '7) Rotated Counter Clockwise', '8) Clunky',
-				 '9) Dustforce Arcade', '10) Virtual', '11) New Genesis',
-				 '12) Single Screen', '13) Darkforce', '14) Multiplayer',
-				 '15) Color Dome', '16) Hideout']
-
-	draw_table, header = create_table_level_set(level_set)
-
-	print(header)
-	print(draw_table)
-	level_set_choice = input(nav_choice('Enter a number: '))
-
-
-def create_table_level_set(level_set_list):
-	"""Creates a list of lists and a tabulate object and returns."""
-	header = """
-╔═══════════════════════════════════════════════════════╗
-║                 CHOOSE YOUR LEVEL SET                 ║
-╚═══════════════════════════════════════════════════════╝"""
-
-	# Creates the data table
-	level_pair_list = []
-	all_level_sets_list = []
-	count = 0
-	for level_set in level_set_list:
-		level_pair_list.append(level_set)
-		count += 1
-		if count == 2:
-			all_level_sets_list.append(level_pair_list)
-			level_pair_list = []
-			count = 0
-	level_sets = all_level_sets_list
-
-	# Creates a table object with tabulate
-	draw_table = tabulate(level_sets, tablefmt='double_outline')
-
-	return draw_table, header
-
-
-def level_set_get():
-	"""Returns all the levels as a list."""
-	try:
-		level_records = requests.get('https://dustkid.com/json/records').json()
-		level_set = []
-		level_set_raw = list((level_records['Scores'].keys()))
-		# Renames the raw level names to the standard level names
-		for i in range(len(level_set_raw)):
-			level_set.append(level_records['Scores'][level_set_raw[i]]
-							 ['levelname'])
-
-		return level_set, level_set_raw
-
-	except requests.exceptions.ConnectionError:
-		print('bad connection')
-		print('exiting...')
-		sys.exit()
+class UserCompare:
+	def __init__(self, userid1, userid2, levelset):
+		self.userid1 = userid1
+		self.userid2 = userid2
+		self.levelset = levelset
 
 
 def user_times_get(user_id):
@@ -240,14 +189,24 @@ def compare_users_any(user1_timetimes, user2_timetimes, level_set):
 				   colalign=('left', 'right', 'right', 'right')))
 
 
-def main():
+def main_menu():
+	"""Main Menu Navigation."""
+	levelset_default = 'Stock Levels'
+	levelset = levelset_default
 	print('1) Compare Times')
-	print('2) Choose Level Set')
+	print('2) Change Level Set')
+	print(f'\nCurrent Level Set: {levelset}\n')
 	x = input(nav_choice('Enter a number: '))
+	return x
+
+
+def main():
+	user1_id, user2_id = finduser.search_users()
+
+	x = main_menu()
 	if x == '1':
-		level_set, level_set_raw = level_set_get()
-		user1_id = '286860'
-		user2_id = '188428'
+		level_set, level_set_raw = levelsethandler.level_set_get()
+
 		user1 = user_times_get(user1_id)
 		user2 = user_times_get(user2_id)
 		user1_scoretimes, user2_scoretimes = level_scoretime_get(user1, user2,
@@ -259,8 +218,7 @@ def main():
 		compare_users_ss(user1_scoretimes, user2_scoretimes, level_set)
 		compare_users_any(user1_timetimes, user2_timetimes, level_set)
 	if x == '2':
-		choose_level_set()
-
+		levelsethandler.choose_level_set()
 
 
 if __name__ == '__main__':
