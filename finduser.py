@@ -4,20 +4,21 @@ import requests
 
 # TO DO
 # Add terminal clearing functionality
-# Check for duplicates on common names
 
 
-def search_users():
+def search_users(level_set):
+	"""Returns a dictionary from the user JSON """
 	user1 = input('Enter username or ID of user1: ')
-	user1 = check_user(user1)
+	user1 = check_user(user1, level_set)
 
 	user2 = input('Enter username or ID of user2: ')
-	user2 = check_user(user2)
-
+	user2 = check_user(user2, level_set)
+	print(user1)
 	return user1, user2
 
 
-def check_user(user):
+def check_user(user, level_set):
+	"""Checks the given user if valid and returns json dictionary."""
 	URL_J = 'https://dustkid.com/json/profile'
 	URL = 'https://dustkid.com/profile'
 	if ' ' in user:
@@ -52,8 +53,3 @@ def check_user(user):
 
 		else:
 			print('Error')
-
-
-
-
-search_users()
