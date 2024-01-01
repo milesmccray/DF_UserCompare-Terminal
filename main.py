@@ -3,6 +3,66 @@ import sys
 from termcolor import colored
 from tabulate import tabulate
 
+
+# TO DO
+# - Rename the levels w/ numbers & infinidifficult
+# - Add user input for user ID
+# - Add a way to choose levelset
+# - Maybe do level_set and save as a text file?
+# - Add a way to type in just the "name" and it shows all dustkid profiles
+# who have that name. Type dustkid.com/profiles/miles
+# - Add better conenciton Error system
+# - Use flask / DJango to create a web based GUI
+# - Make a 'loading' bar during a request?
+# - Split main.py into different documents. Like a "term drawing document" etc
+
+def nav_choice(string):
+	x = colored(string, attrs=['bold', 'underline'])
+	return x
+
+
+def choose_level_set():
+	level_set = ['1) Standard Levels', '2) Community Map Pack',
+				 '3) Dustforce Custom League', '4) Backwards Dustforce',
+				 '5) Nuclear Zone', '6) Rotated Clockwise',
+				 '7) Rotated Counter Clockwise', '8) Clunky',
+				 '9) Dustforce Arcade', '10) Virtual', '11) New Genesis',
+				 '12) Single Screen', '13) Darkforce', '14) Multiplayer',
+				 '15) Color Dome', '16) Hideout']
+
+	draw_table, header = create_table_level_set(level_set)
+
+	print(header)
+	print(draw_table)
+	level_set_choice = input(nav_choice('Enter a number: '))
+
+
+def create_table_level_set(level_set_list):
+	"""Creates a list of lists and a tabulate object and returns."""
+	header = """
+╔═══════════════════════════════════════════════════════╗
+║                 CHOOSE YOUR LEVEL SET                 ║
+╚═══════════════════════════════════════════════════════╝"""
+
+	# Creates the data table
+	level_pair_list = []
+	all_level_sets_list = []
+	count = 0
+	for level_set in level_set_list:
+		level_pair_list.append(level_set)
+		count += 1
+		if count == 2:
+			all_level_sets_list.append(level_pair_list)
+			level_pair_list = []
+			count = 0
+	level_sets = all_level_sets_list
+
+	# Creates a table object with tabulate
+	draw_table = tabulate(level_sets, tablefmt='double_outline')
+
+	return draw_table, header
+
+
 def level_set_get():
 	"""Returns all the levels as a list."""
 	try:
@@ -160,7 +220,7 @@ def compare_users_ss(user1_scoretimes, user2_scoretimes, level_set):
 		table.append([level, user1_time, user2_time, user_difference])
 
 	# Creates SS table using Tabulate
-	print(tabulate(table, headers=headers, tablefmt="simple_outline",
+	print(tabulate(table, headers=headers, tablefmt="double_outline",
 				   colalign=('left', 'right', 'right', 'right',)))
 
 
@@ -176,24 +236,31 @@ def compare_users_any(user1_timetimes, user2_timetimes, level_set):
 		table.append([level, user1_time, user2_time, user_difference])
 
 	# Creates Any% table using Tabulate
-	print(tabulate(table, headers, tablefmt="simple_outline",
+	print(tabulate(table, headers, tablefmt="double_outline",
 				   colalign=('left', 'right', 'right', 'right')))
 
 
 def main():
-	level_set, level_set_raw = level_set_get()
-	user1_id = '286860'
-	user2_id = '188428'
-	user1 = user_times_get(user1_id)
-	user2 = user_times_get(user2_id)
-	user1_scoretimes, user2_scoretimes = level_scoretime_get(user1, user2,
-															 level_set,
-															 level_set_raw)
-	user1_timetimes, user2_timetimes = level_timetime_get(user1, user2,
-														  level_set,
-														  level_set_raw)
-	compare_users_ss(user1_scoretimes, user2_scoretimes, level_set)
-	compare_users_any(user1_timetimes, user2_timetimes, level_set)
+	print('1) Compare Times')
+	print('2) Choose Level Set')
+	x = input(nav_choice('Enter a number: '))
+	if x == '1':
+		level_set, level_set_raw = level_set_get()
+		user1_id = '286860'
+		user2_id = '188428'
+		user1 = user_times_get(user1_id)
+		user2 = user_times_get(user2_id)
+		user1_scoretimes, user2_scoretimes = level_scoretime_get(user1, user2,
+																 level_set,
+																 level_set_raw)
+		user1_timetimes, user2_timetimes = level_timetime_get(user1, user2,
+															  level_set,
+															  level_set_raw)
+		compare_users_ss(user1_scoretimes, user2_scoretimes, level_set)
+		compare_users_any(user1_timetimes, user2_timetimes, level_set)
+	if x == '2':
+		choose_level_set()
+
 
 
 if __name__ == '__main__':
