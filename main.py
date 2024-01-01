@@ -1,6 +1,6 @@
 import requests
 import sys
-import levelsethandler
+import levelset_utils
 import finduser
 from termcolor import colored
 from tabulate import tabulate
@@ -29,18 +29,6 @@ class UserCompare:
 		self.userid1 = userid1
 		self.userid2 = userid2
 		self.levelset = levelset
-
-
-def user_times_get(user_id):
-	"""Tries to grab the json file and return a dictionary object."""
-	try:
-		user = requests.get(f'https://dustkid.com/json/profile/'
-							f'{user_id}/').json()
-		return user
-	except requests.exceptions.ConnectionError:
-		print("Couldn't find user")
-		print('exiting...')
-		sys.exit()
 
 
 def level_scoretime_get(user1, user2, level_set, level_set_raw):
@@ -201,14 +189,18 @@ def main_menu():
 
 
 def main():
-	user1_id, user2_id = finduser.search_users()
+	"""Loads the main program and acts as a navigator."""
+
+	# Downloads / Loads default levelset
+	level_set = levelset_utils.choose_level_set()
+	# Returns user-level
+	user1, user2 = finduser.search_users(level_set)
 
 	x = main_menu()
 	if x == '1':
-		level_set, level_set_raw = levelsethandler.level_set_get()
+		# THIS NEEDS TO BE MODIFIED. ALL LEVEL SET STUFF IS DOWNLOADED
+		level_set, level_set_raw = levelset_utils.level_set_get()
 
-		user1 = user_times_get(user1_id)
-		user2 = user_times_get(user2_id)
 		user1_scoretimes, user2_scoretimes = level_scoretime_get(user1, user2,
 																 level_set,
 																 level_set_raw)
@@ -218,7 +210,7 @@ def main():
 		compare_users_ss(user1_scoretimes, user2_scoretimes, level_set)
 		compare_users_any(user1_timetimes, user2_timetimes, level_set)
 	if x == '2':
-		levelsethandler.choose_level_set()
+		levelset_utils.choose_level_set()
 
 
 if __name__ == '__main__':
