@@ -1,5 +1,3 @@
-import requests
-import sys
 import levelset_utils
 import finduser
 from termcolor import colored
@@ -7,16 +5,14 @@ from tabulate import tabulate
 
 
 # TO DO
-# - Rename the levels w/ numbers & infinidifficult
-# - Add user input for user ID
 # - Add a way to choose levelset
-# - Maybe do level_set and save as a text file?
-# - Add a way to type in just the "name" and it shows all dustkid profiles
 # who have that name. Type dustkid.com/profiles/miles
 # - Add better conenciton Error system
 # - Use flask / DJango to create a web based GUI
 # - Make a 'loading' bar during a request?
-# - Split main.py into different documents. Like a "term drawing document" etc
+# - Create a class and organize document around it
+# - Add "fail-safe" if user input isn't correct
+# - Consistent formatting
 
 
 def nav_choice(string):
@@ -31,26 +27,24 @@ class UserCompare:
 		self.levelset = levelset
 
 
-def level_scoretime_get(user1, user2, level_set, level_set_raw):
+def get_level_time_ss(user1, user2, level_set_data):
 	"""Returns a corresponding dictionary for a user for level scoretime."""
-	user1_scoretimes = {}
-	user2_scoretimes = {}
+	user1_time_ss = {}
+	user2_time_ss = {}
 
 	# Sets user K:V pair. If value doesn't exist, sets to N/A
-	for i, level in enumerate(level_set):
+	for level, level_raw in level_set_data.items():
 		try:
-			user1_scoretimes[level] = user1['ranks_scores'][
-				level_set_raw[i]]['time']
+			user1_time_ss[level] = user1['ranks_scores'][level_raw]['time']
 		except KeyError:
-			user1_scoretimes[level] = 'N/A'
+			user1_time_ss[level] = 'N/A'
 
 		try:
-			user2_scoretimes[level] = user2['ranks_scores'][
-				level_set_raw[i]]['time']
+			user2_time_ss[level] = user2['ranks_scores'][level_raw]['time']
 		except KeyError:
-			user2_scoretimes[level] = 'N/A'
+			user2_time_ss[level] = 'N/A'
 
-	return user1_scoretimes, user2_scoretimes
+	return user1_time_ss, user2_time_ss
 
 
 def level_timetime_get(user1, user2, level_set, level_set_raw):
@@ -177,7 +171,7 @@ def compare_users_any(user1_timetimes, user2_timetimes, level_set):
 				   colalign=('left', 'right', 'right', 'right')))
 
 
-def main_menu():
+def main_menu(level_set):
 	"""Main Menu Navigation."""
 	levelset_default = 'Stock Levels'
 	levelset = levelset_default
@@ -191,26 +185,32 @@ def main_menu():
 def main():
 	"""Loads the main program and acts as a navigator."""
 
-	# Downloads / Loads default levelset
-	level_set = levelset_utils.choose_level_set()
-	# Returns user-level
-	user1, user2 = finduser.search_users(level_set)
+	# Default levelset information
+	level_set_name = 'Stock Levels'
+	level_set_url = 'all'
+	level_set_id = 0
 
-	x = main_menu()
+	# Returns user time information on level set
+	user1, user2 = finduser.search_users(level_set_url)
+
+	x = main_menu(level_set_name)
 	if x == '1':
-		# THIS NEEDS TO BE MODIFIED. ALL LEVEL SET STUFF IS DOWNLOADED
-		level_set, level_set_raw = levelset_utils.level_set_get()
+		level_set_data = levelset_utils.level_set_info(
+			level_set_id, level_set_name)
 
-		user1_scoretimes, user2_scoretimes = level_scoretime_get(user1, user2,
-																 level_set,
-																 level_set_raw)
-		user1_timetimes, user2_timetimes = level_timetime_get(user1, user2,
-															  level_set,
-															  level_set_raw)
-		compare_users_ss(user1_scoretimes, user2_scoretimes, level_set)
-		compare_users_any(user1_timetimes, user2_timetimes, level_set)
+		user1_time_ss, user2_time_ss = get_level_time_ss(user1, user2,
+														 level_set_data)
+		print(user1_time_ss)
+		print(user2_time_ss)
+
+		#user1_timetimes, user2_timetimes = level_timetime_get(user1, user2,
+															  #level_set,
+															 # level_set_raw)
+		#compare_users_ss(user1_scoretimes, user2_scoretimes, level_set)
+		#compare_users_any(user1_timetimes, user2_timetimes, level_set)
 	if x == '2':
-		levelset_utils.choose_level_set()
+		level_set, level_set_url, level_set_id = (
+			levelset_utils.level_set_change())
 
 
 if __name__ == '__main__':

@@ -1,28 +1,50 @@
 from tabulate import tabulate
 import requests
-# from main import nav_choice
+#from main import nav_choice
 import json
 
 
 # TO DO
 # - Create a place to store the lists once downloaded
 
-def choose_level_set():
-	# ADD A THING WHERE IF THEY CHOOSE LEVEL SET IT HAS TO GO AND GET IT.
-	# ALSO CREATE THE "DEFAULT" LEVEL SET
-	level_set = ['1) Standard Levels', '2) Community Map Pack',
-				 '3) Dustforce Custom League', '4) Backwards Dustforce',
-				 '5) Nuclear Zone', '6) Rotated Clockwise',
-				 '7) Rotated Counter Clockwise', '8) Clunky',
-				 '9) Dustforce Arcade', '10) Virtual', '11) New Genesis',
-				 '12) Single Screen', '13) Darkforce', '14) Multiplayer',
-				 '15) Color Dome', '16) Hideout']
+def level_set_change():
+	"""For changing the level set"""
+	level_sets_display = ['1) Stock Levels', '2) Community Map Pack',
+				  '3) Dustforce Custom League', '4) Backwards Dustforce',
+				  '5) Nuclear Zone', '6) Rotated Clockwise',
+				  '7) Rotated Counter Clockwise', '8) Clunky',
+				  '9) Dustforce Arcade', '10) Virtual', '11) New Genesis',
+				  '12) Single Screen', '13) Darkforce', '14) Multiplayer',
+				  '15) Color Dome', '16) Hideout']
 
-	draw_table, header = create_table_level_set(level_set)
+	level_set_urls = ['all', 'cmp', 'league', 'ecroftsud', 'nuclear',
+					  'rotated', 'rotatedccw', 'clunky', 'arcade',
+					  'virtualnexus', 'newgenesis', 'singlescreen',
+					  'darkforce', 'multi', 'colordome', 'hideout']
 
-	print(header)
+	level_sets = ['Stock Levels', 'Community Map Pack',
+				  'Dustforce Custom League', 'Backwards Dustforce',
+				  'Nuclear Zone', 'Rotated Clockwise',
+				  'Rotated Counter Clockwise', 'Clunky', 'Dustforce Arcade',
+				  'Virtual', 'New Genesis', 'Single Screen', 'Darkforce',
+				  'Multiplayer', 'Color Dome', 'Hideout']
+
+	# Creates the table(s)
+	draw_table, draw_header = create_table_level_set(level_sets_display)
+
+	# Draws table to the screen
+	print(draw_header)
 	print(draw_table)
+
+	# TODO: add fail-safe for user input
 	level_set_choice = input(nav_choice('Enter a number: '))
+
+	# Sets appropriate levelset information
+	level_set_url = level_set_urls[int(level_set_choice) - 1]
+	level_set_id = int(level_set_choice) - 1
+	level_set_name = level_sets[int(level_set_choice) - 1]
+
+	return level_set_name, level_set_url, level_set_id
 
 
 def create_table_level_set(level_set_list):
@@ -49,6 +71,14 @@ def create_table_level_set(level_set_list):
 	draw_table = tabulate(level_sets, tablefmt='double_outline')
 
 	return draw_table, header
+
+
+def level_set_info(level_set_id, level_set_name):
+	"""JSON Structure list>levelset(key)>level(key):(value)<levelset(key)>..."""
+	with open('levelsets.json', 'r') as json_level_set:
+		level_set_data = json.load(json_level_set)[level_set_id][level_set_name]
+
+		return level_set_data
 
 
 def level_set_get(levelset, setname):
@@ -106,3 +136,6 @@ def level_set_setup():
 
 	with open('levelsets.json', 'w') as file:
 		json.dump(master_level_set, file, indent=2)
+
+
+level_set_info(0, 'Stock Levels')
