@@ -5,14 +5,13 @@ from tabulate import tabulate
 
 
 # TO DO
-# - Add a way to choose levelset
-# who have that name. Type dustkid.com/profiles/miles
 # - Add better conenciton Error system
 # - Use flask / DJango to create a web based GUI
 # - Make a 'loading' bar during a request?
 # - Create a class and organize document around it
 # - Add "fail-safe" if user input isn't correct
 # - Consistent formatting
+# - Create a while true loop for main, and add continuie for option 2
 
 
 def nav_choice(string):
@@ -21,10 +20,10 @@ def nav_choice(string):
 
 
 class UserCompare:
-	def __init__(self, userid1, userid2, levelset):
+	def __init__(self, userid1, userid2, level_set_data):
 		self.userid1 = userid1
 		self.userid2 = userid2
-		self.levelset = levelset
+		self.level_set_data = level_set_data
 
 
 def get_level_time_ss(user1, user2, level_set_data):
@@ -47,26 +46,59 @@ def get_level_time_ss(user1, user2, level_set_data):
 	return user1_time_ss, user2_time_ss
 
 
-def level_timetime_get(user1, user2, level_set, level_set_raw):
+def get_level_time_any(user1, user2, level_set_data):
 	"""Returns a corresponding dictionary for a user for level timetime."""
-	user1_timetimes = {}
-	user2_timetimes = {}
+	user1_time_any = {}
+	user2_time_any = {}
 
 	# Sets user K:V pair. If value doesn't exist, sets to N/A
-	for i, level in enumerate(level_set):
+	for level, level_raw in level_set_data.items():
 		try:
-			user1_timetimes[level] = user1['ranks_times'][
-				level_set_raw[i]]['time']
+			user1_time_any[level] = user1['ranks_times'][level_raw]['time']
 		except KeyError:
-			user1_timetimes[level] = 'N/A'
+			user1_time_any[level] = 'N/A'
 
 		try:
-			user2_timetimes[level] = user2['ranks_times'][
-				level_set_raw[i]]['time']
+			user2_time_any[level] = user2['ranks_times'][level_raw]['time']
 		except KeyError:
-			user2_timetimes[level] = 'N/A'
+			user2_time_any[level] = 'N/A'
 
-	return user1_timetimes, user2_timetimes
+	return user1_time_any, user2_time_any
+
+
+def compare_users_ss(user1_time_ss, user2_time_ss, level_set_data):
+	"""Compares user ss times to one another and returns a formatted table."""
+	headers = ['Levels -- SS', 'USER 1', 'USER 2', '+/-']
+	table_ss = []
+	# Creates row data
+	for level, level_raw in level_set_data.items():
+		user1_time_fmt = convert_time_get(user1_time_ss[level])
+		user2_time_fmt = convert_time_get(user2_time_ss[level])
+		user_time_difference = user_difference_get(user1_time_ss[level],
+												   user2_time_ss[level])
+		table_ss.append([level, user1_time_fmt, user2_time_fmt,
+					  user_time_difference])
+
+	# Creates SS table using Tabulate
+	print(tabulate(table_ss, headers=headers, tablefmt="double_outline",
+				   colalign=('left', 'right', 'right', 'right',)))
+
+
+def compare_users_any(user1_timetimes, user2_timetimes, level_set):
+	"""Compares user any% times to one another and returns a formatted table."""
+	headers = ['Levels -- Any%', 'USER 1', 'USER 2', '+/-']
+	table_any = []
+	for level in level_set:
+		user1_time_fmt = convert_time_get(user1_timetimes[level])
+		user2_time_fmt = convert_time_get(user2_timetimes[level])
+		user_time_difference = user_difference_get(user1_timetimes[level],
+												   user2_timetimes[level])
+		table_any.append([level, user1_time_fmt, user2_time_fmt,
+					  user_time_difference])
+
+	# Creates Any% table using Tabulate
+	print(tabulate(table_any, headers, tablefmt="double_outline",
+				   colalign=('left', 'right', 'right', 'right')))
 
 
 def user_difference_get(user1_time, user2_time):
@@ -138,39 +170,6 @@ def convert_time_get(user_time):
 			return user_time_fmt
 
 
-def compare_users_ss(user1_scoretimes, user2_scoretimes, level_set):
-	"""Compares user ss times to one another and returns a formatted table."""
-	headers = ['Levels -- SS', 'USER 1', 'USER 2', '+/-']
-	table = []
-	# Creates row data
-	for level in level_set:
-		user1_time = convert_time_get(user1_scoretimes[level])
-		user2_time = convert_time_get(user2_scoretimes[level])
-		user_difference = user_difference_get(user1_scoretimes[level],
-											  user2_scoretimes[level])
-		table.append([level, user1_time, user2_time, user_difference])
-
-	# Creates SS table using Tabulate
-	print(tabulate(table, headers=headers, tablefmt="double_outline",
-				   colalign=('left', 'right', 'right', 'right',)))
-
-
-def compare_users_any(user1_timetimes, user2_timetimes, level_set):
-	"""Compares user any% times to one another and returns a formatted table."""
-	headers = ['Levels -- Any%', 'USER 1', 'USER 2', '+/-']
-	table = []
-	for level in level_set:
-		user1_time = convert_time_get(user1_timetimes[level])
-		user2_time = convert_time_get(user2_timetimes[level])
-		user_difference = user_difference_get(user1_timetimes[level],
-											  user2_timetimes[level])
-		table.append([level, user1_time, user2_time, user_difference])
-
-	# Creates Any% table using Tabulate
-	print(tabulate(table, headers, tablefmt="double_outline",
-				   colalign=('left', 'right', 'right', 'right')))
-
-
 def main_menu(level_set):
 	"""Main Menu Navigation."""
 	levelset_default = 'Stock Levels'
@@ -184,7 +183,6 @@ def main_menu(level_set):
 
 def main():
 	"""Loads the main program and acts as a navigator."""
-
 	# Default levelset information
 	level_set_name = 'Stock Levels'
 	level_set_url = 'all'
@@ -193,24 +191,25 @@ def main():
 	# Returns user time information on level set
 	user1, user2 = finduser.search_users(level_set_url)
 
+	# EWWWW PLS FIX
 	x = main_menu(level_set_name)
+
 	if x == '1':
 		level_set_data = levelset_utils.level_set_info(
 			level_set_id, level_set_name)
 
 		user1_time_ss, user2_time_ss = get_level_time_ss(user1, user2,
 														 level_set_data)
-		print(user1_time_ss)
-		print(user2_time_ss)
 
-		#user1_timetimes, user2_timetimes = level_timetime_get(user1, user2,
-															  #level_set,
-															 # level_set_raw)
-		#compare_users_ss(user1_scoretimes, user2_scoretimes, level_set)
-		#compare_users_any(user1_timetimes, user2_timetimes, level_set)
+		user1_time_any, user2_time_any = get_level_time_any(user1, user2,
+															level_set_data)
+
+		compare_users_ss(user1_time_ss, user2_time_ss, level_set_data)
+		compare_users_any(user1_time_any, user2_time_any, level_set_data)
+
 	if x == '2':
-		level_set, level_set_url, level_set_id = (
-			levelset_utils.level_set_change())
+		# ADD LOOP HERE
+		level_set, level_set_url, level_set_id = (levelset_utils.level_set_change())
 
 
 if __name__ == '__main__':
