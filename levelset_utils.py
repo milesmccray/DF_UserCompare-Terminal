@@ -1,6 +1,6 @@
 from tabulate import tabulate
 import requests
-#from main import nav_choice
+import utils
 import json
 
 
@@ -37,7 +37,7 @@ def level_set_change():
 	print(draw_table)
 
 	# TODO: add fail-safe for user input
-	level_set_choice = input(nav_choice('Enter a number: '))
+	level_set_choice = input(utils.nav_choice('Enter a number: '))
 
 	# Sets appropriate levelset information
 	level_set_url = level_set_urls[int(level_set_choice) - 1]
