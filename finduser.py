@@ -13,7 +13,8 @@ def search_users(level_set):
 
 	user2 = input('Enter username or ID of user2: ')
 	user2 = check_user(user2, level_set)
-	print(user1)
+
+	print(user2)
 	return user1, user2
 
 
@@ -21,12 +22,30 @@ def check_user(user, level_set):
 	"""Checks the given user if valid and returns json dictionary."""
 	URL_J = 'https://dustkid.com/json/profile'
 	URL = 'https://dustkid.com/profile'
+	flag = 0
+	print(user, flag)
 	if ' ' in user:
 		user.replace(' ', '%20')
 
+	# Flag is raised if they entered an ID number
+	if user.isnumeric():
+		flag = 1
+
 	try:
-		user_page = requests.get(f'{URL_J}/{user}/').json()
-		return user_page
+		if flag != 1:
+			user_page = requests.get(f'{URL_J}/{user}/{level_set}').json()
+
+			return user_page
+
+		# If flag was raised, reconstruct request call to contain username
+		if flag == 1:
+			user_page_id = requests.get(f'{URL_J}/{user}/').json()
+			user_name = user_page_id['ranks_scores']['newtutorial1'][
+				'username']
+			user_id = user_page_id['ranks_scores']['newtutorial1']['user']
+			user_page_id = requests.get(f'{URL_J}/{user_id}/'
+										f'{user_name}/{level_set}').json()
+			return user_page_id
 
 	except requests.exceptions.ConnectionError:
 		print("Connection Error")
@@ -36,20 +55,23 @@ def check_user(user, level_set):
 	except requests.exceptions.JSONDecodeError:
 		error_page = requests.get(f'{URL}/{user}/')
 
-		# Checks page
+		# Checks can't find user page
 		if 'Profile - Cannot find user' in error_page.text:
 			print("Couldn't find user")
-			user_retry = input('Enter username or ID of user1: ')
-			check_user(user_retry)
+			user_retry = input('Enter username or ID of a user: ')
+			check_user(user_retry, level_set)
 
+		# Checks multiple user page
 		elif 'Please select a user' in error_page.text:
 			multiple_users_html = BeautifulSoup(error_page.content,
-											   'html.parser')
+												'html.parser')
 			print('Multiple users found')
 			for user_found in multiple_users_html.find_all('li'):
 				print(user_found.get_text())
-			user_retry = input('\nType the ID number of the correct user: ')
-			check_user(user_retry)
+			user_retry = input('\nType the ID number of the correct user or '
+							   'try again: ')
+			check_user(user_retry, level_set)
 
+		# TODO FAIL SAFE ADD
 		else:
 			print('Error')
