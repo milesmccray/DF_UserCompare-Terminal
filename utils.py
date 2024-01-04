@@ -2,8 +2,15 @@ from termcolor import colored
 import json
 
 
-def nav_choice(string):
-	x = colored(string, attrs=['bold', 'underline'])
+# Find a way to not under line space?
+
+def underline(string):
+	x = colored(string, attrs=['underline'])
+	return x
+
+
+def bold(string):
+	x = colored(string, attrs=['bold'])
 	return x
 
 

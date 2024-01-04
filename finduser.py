@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+import utils
 
 
 # TO DO
@@ -8,10 +9,10 @@ import requests
 
 def search_users(level_set_url):
 	"""Returns a dictionary from the user JSON """
-	user1 = input('Enter username or ID of user1: ')
+	user1 = input(utils.bold('Enter username or ID of user1: '))
 	user1_data, user1_name = check_user(user1, level_set_url)
 
-	user2 = input('Enter username or ID of user2: ')
+	user2 = input(utils.bold('Enter username or ID of user2: '))
 	user2_data, user2_name = check_user(user2, level_set_url)
 
 	return user1_data, user2_data, user1_name, user2_name
@@ -64,8 +65,9 @@ def check_user(user, level_set_url):
 
 			# Checks can't find user page
 			if 'Profile - Cannot find user' in error_page.text:
-				print("\nCouldn't find user")
-				user_retry = input('Enter username or ID of a user: ')
+				print("Couldn't find user")
+				user_retry = input(utils.bold('\nEnter username or ID of a '
+											  'user: '))
 
 				# Resets the user variable and tries again
 				user = user_retry
@@ -76,12 +78,12 @@ def check_user(user, level_set_url):
 				# Grabs the html of the multiple user page
 				multiple_users_html = BeautifulSoup(error_page.content,
 													'html.parser')
-				print('Multiple users found')
+				print('\nMultiple users found')
 				# Prints every instance of the user on the page
 				for user_found in multiple_users_html.find_all('li'):
 					print(user_found.get_text())
-				user_retry = input('\nType the ID number of the correct user or '
-								   'try again: ')
+				user_retry = input(utils.bold('\nType the ID number of the '
+											  'correct user or try again: '))
 
 				# Resets the user variable and tries loop again
 				user = user_retry

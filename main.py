@@ -1,6 +1,7 @@
-import levelset_utils
+import levelset
 import finduser
 import utils
+import os
 from termcolor import colored
 from tabulate import tabulate
 
@@ -8,10 +9,9 @@ from tabulate import tabulate
 # TO DO
 # - Add better conenciton Error system
 # - Use flask / DJango to create a web based GUI
-# - Make a 'loading' bar during a request?
-# - Create a class and organize document around it
 # - Add "fail-safe" if user input isn't correct
-# - Consistent formatting
+# - Consistent formatting, add bold text, make sure spacing is right
+# - ORganize imports
 
 class UserCompare:
 	def __init__(self, user1_data, user2_data, user1_name,
@@ -70,7 +70,7 @@ class UserCompare:
 
 	def compare_users_ss(self, user1_time_ss, user2_time_ss):
 		"""Compares user ss times to one another and returns a formatted table."""
-		headers = ['Levels -- SS', 'USER 1', 'USER 2', '+/-']
+		headers = ['Levels -- SS', self.user1_name, self.user2_name, '+/-']
 		table_ss = []
 		# Creates row data
 		for level, level_raw in self.level_set_data.items():
@@ -88,7 +88,7 @@ class UserCompare:
 
 	def compare_users_any(self, user1_timetimes, user2_timetimes):
 		"""Compares user any% times to one another and returns a formatted table."""
-		headers = ['Levels -- Any%', 'USER 1', 'USER 2', '+/-']
+		headers = ['Levels -- Any%', self.user1_name, self.user2_name, '+/-']
 		table_any = []
 		for level in self.level_set_data:
 			user1_time_fmt = UserCompare.convert_time_get(user1_timetimes[
@@ -183,10 +183,11 @@ class UserCompare:
 		print(f'\nUser1: {self.user1_name} \nUser2: {self.user2_name}')
 		print(f'Level Set: {self.level_set_name}\n')
 
-		x = input(utils.nav_choice('Enter a number: '))
+		x = input(utils.bold('Enter a number: '))
 
 		# Compares user times using the given levelset
 		if x == '1':
+			os.system('clear||cls')
 			# Gets the SS & Any% times for each user
 			user1_time_ss, user2_time_ss = self.get_level_time_ss()
 			user1_time_any, user2_time_any = self.get_level_time_any()
@@ -194,19 +195,23 @@ class UserCompare:
 			self.compare_users_ss(user1_time_ss, user2_time_ss)
 			self.compare_users_any(user1_time_any, user2_time_any)
 
+			input(utils.bold('Enter anything to return to menu: '))
+
 		# Re-requests dustkid.com and updates class variables
 		elif x == '2':
+			os.system('clear||cls')
 			(self.user1_data, self.user2_data, self.user1_name,
 			 self.user2_name) = finduser.search_users(self.level_set_url)
 
 		# Re-grabs levelset json / user data and updates class variables
 		elif x == '3':
+			os.system('clear||cls')
 			# Grabs the level set information depending on user choice
 			self.level_set_name, self.level_set_url, self.level_set_id = (
-				levelset_utils.level_set_change())
+				levelset.level_set_change())
 
 			# Grabs full levelset data from json
-			self.level_set_data = levelset_utils.level_set_info(
+			self.level_set_data = levelset.level_set_info(
 				self.level_set_id, self.level_set_name)
 
 			# Re grabs user information according to the levelset
@@ -228,7 +233,7 @@ def main():
 	# Gets User 1 & 2 json files and dictionary of level names from levelset
 	user1_data, user2_data, user1_name, user2_name = finduser.search_users(
 		level_set_url)
-	level_set_data = levelset_utils.level_set_info(level_set_id, level_set_name)
+	level_set_data = levelset.level_set_info(level_set_id, level_set_name)
 
 	# Creates class instance of all user/level data
 	compare_users = UserCompare(user1_data, user2_data, user1_name,
@@ -238,6 +243,7 @@ def main():
 	# TODO: Add more breakers, clearing of screen
 	# Main game loop
 	while True:
+		os.system('clear||cls')
 		compare_users.main_menu()
 
 
