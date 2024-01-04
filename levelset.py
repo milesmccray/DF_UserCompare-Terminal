@@ -7,12 +7,15 @@ import json
 def level_set_change():
 	"""For changing the level set"""
 	level_sets_display = ['1) Stock Levels', '2) Community Map Pack',
-				  '3) Dustforce Custom League', '4) Backwards Dustforce',
-				  '5) Nuclear Zone', '6) Rotated Clockwise',
-				  '7) Rotated Counterclockwise', '8) Clunky',
-				  '9) Dustforce Arcade', '10) Virtual', '11) New Genesis',
-				  '12) Single Screen', '13) Darkforce', '14) Multiplayer',
-				  '15) Color Dome', '16) Hideout']
+						  '3) Dustforce Custom League',
+						  '4) Backwards Dustforce',
+						  '5) Nuclear Zone', '6) Rotated Clockwise',
+						  '7) Rotated Counterclockwise', '8) Clunky',
+						  '9) Dustforce Arcade', '10) Virtual',
+						  '11) New Genesis',
+						  '12) Single Screen', '13) Darkforce',
+						  '14) Multiplayer',
+						  '15) Color Dome', '16) Hideout']
 
 	level_set_urls = ['all', 'cmp', 'league', 'ecroftsud', 'nuclear',
 					  'rotated', 'rotatedccw', 'clunky', 'arcade',
@@ -46,10 +49,9 @@ def level_set_change():
 
 def create_table_level_set(level_set_list):
 	"""Creates a list of lists and a tabulate object and returns."""
-	header = (
-"""╔═══════════════════════════════════════════════════════╗
+	header = """╔═══════════════════════════════════════════════════════╗
 ║                 CHOOSE YOUR LEVEL SET                 ║
-╚═══════════════════════════════════════════════════════╝""")
+╚═══════════════════════════════════════════════════════╝"""
 
 	# Creates the data table
 	level_pair_list = []
@@ -114,7 +116,7 @@ def level_set_setup():
 	master_level_set.append(level_set)
 	level_set = level_set_get('clunky', 'Clunky')
 	master_level_set.append(level_set)
-	level_set = level_set_get('arcade', 'Arcade')
+	level_set = level_set_get('arcade', 'Dustforce Arcade')
 	master_level_set.append(level_set)
 	level_set = level_set_get('virtualnexus', 'Virtual')
 	master_level_set.append(level_set)
