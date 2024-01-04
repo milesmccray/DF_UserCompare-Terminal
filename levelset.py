@@ -4,15 +4,12 @@ import utils
 import json
 
 
-# TO DO
-# - Create a place to store the lists once downloaded
-
 def level_set_change():
 	"""For changing the level set"""
 	level_sets_display = ['1) Stock Levels', '2) Community Map Pack',
 				  '3) Dustforce Custom League', '4) Backwards Dustforce',
 				  '5) Nuclear Zone', '6) Rotated Clockwise',
-				  '7) Rotated Counter Clockwise', '8) Clunky',
+				  '7) Rotated Counterclockwise', '8) Clunky',
 				  '9) Dustforce Arcade', '10) Virtual', '11) New Genesis',
 				  '12) Single Screen', '13) Darkforce', '14) Multiplayer',
 				  '15) Color Dome', '16) Hideout']
@@ -25,7 +22,7 @@ def level_set_change():
 	level_sets = ['Stock Levels', 'Community Map Pack',
 				  'Dustforce Custom League', 'Backwards Dustforce',
 				  'Nuclear Zone', 'Rotated Clockwise',
-				  'Rotated Counter Clockwise', 'Clunky', 'Dustforce Arcade',
+				  'Rotated Counterclockwise', 'Clunky', 'Dustforce Arcade',
 				  'Virtual', 'New Genesis', 'Single Screen', 'Darkforce',
 				  'Multiplayer', 'Color Dome', 'Hideout']
 
@@ -37,7 +34,7 @@ def level_set_change():
 	print(draw_table)
 
 	# TODO: add fail-safe for user input
-	level_set_choice = input(utils.nav_choice('Enter a number: '))
+	level_set_choice = input(utils.bold('Enter a number: '))
 
 	# Sets appropriate levelset information
 	level_set_url = level_set_urls[int(level_set_choice) - 1]
@@ -49,10 +46,10 @@ def level_set_change():
 
 def create_table_level_set(level_set_list):
 	"""Creates a list of lists and a tabulate object and returns."""
-	header = """
-╔═══════════════════════════════════════════════════════╗
+	header = (
+"""╔═══════════════════════════════════════════════════════╗
 ║                 CHOOSE YOUR LEVEL SET                 ║
-╚═══════════════════════════════════════════════════════╝"""
+╚═══════════════════════════════════════════════════════╝""")
 
 	# Creates the data table
 	level_pair_list = []
@@ -136,6 +133,3 @@ def level_set_setup():
 
 	with open('levelsets.json', 'w') as file:
 		json.dump(master_level_set, file, indent=2)
-
-
-level_set_info(0, 'Stock Levels')
