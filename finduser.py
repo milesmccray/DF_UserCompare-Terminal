@@ -7,12 +7,12 @@ import utils
 def search_users(level_set_url):
 	"""Returns a dictionary from the user JSON """
 	user1 = input(utils.bold_underline('Enter username or ID of User 1: '))
-	user1_data, user1_name = check_user(user1, level_set_url)
+	user1_data, user1_name, user1_id = check_user(user1, level_set_url)
 
 	user2 = input(utils.bold_underline('Enter username or ID of User 2: '))
-	user2_data, user2_name = check_user(user2, level_set_url)
+	user2_data, user2_name, user2_id = check_user(user2, level_set_url)
 
-	return user1_data, user2_data, user1_name, user2_name
+	return user1_data, user2_data, user1_name, user2_name, user1_id, user2_id
 
 
 def check_user(user, level_set_url):
@@ -34,11 +34,12 @@ def check_user(user, level_set_url):
 				# Grabs user json
 				user_data = requests.get(f'{URL_J}/{user}/'
 										 f'{level_set_url}').json()
-				# Grabs the username
-				user_name = list(user_data['ranks_scores'].values())
-				user_name = user_name[0]['username']
+				# Grabs the username & ID
+				user_data_list = list(user_data['ranks_scores'].values())
+				user_name = user_data_list[0]['username']
+				user_id = user_data_list[0]['user']
 
-				return user_data, user_name
+				return user_data, user_name, user_id
 
 			# If flag was raised, reconstruct request call to contain username
 			if flag == 1:
@@ -50,7 +51,7 @@ def check_user(user, level_set_url):
 				# Make final request to grab full user_data
 				user_data = requests.get(f'{URL_J}/{user_id}/{user_name}/'
 											f'{level_set_url}').json()
-				return user_data, user_name
+				return user_data, user_name, user_id
 
 		except requests.exceptions.ConnectionError:
 			input("Internet Connection Error...")

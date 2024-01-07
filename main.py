@@ -6,14 +6,16 @@ import utils
 
 
 class UserCompare:
-	def __init__(self, user1_data, user2_data, user1_name,
-				 user2_name, level_set_data, level_set_name, level_set_url,
-				 level_set_id):
+	def __init__(self, user1_data, user2_data, user1_name, user2_name,
+				 user1_id, user2_id, level_set_data, level_set_name,
+				 level_set_url, level_set_id):
 
 		self.user1_data = user1_data
 		self.user2_data = user2_data
 		self.user1_name = user1_name
 		self.user2_name = user2_name
+		self.user1_id = user1_id
+		self.user2_id = user2_id
 		self.level_set_data = level_set_data
 		self.level_set_name = level_set_name
 		self.level_set_url = level_set_url
@@ -217,12 +219,14 @@ class UserCompare:
 			self.level_set_data = levelset.level_set_info(
 				self.level_set_id, self.level_set_name)
 
-			# Re grabs user information according to the levelset
-			self.user1_data, self.user1_name = finduser.check_user(
-				self.user1_name, self.level_set_url)
-			self.user2_data, self.user2_name = finduser.check_user(
-				self.user2_name, self.level_set_url)
-		# TODO: Add fail safe
+			# Re grabs user information with previous name
+			self.user1_data, self.user1_name, self.user1_id = (
+				finduser.check_user(f'{self.user1_id}/{self.user1_name}',
+									self.level_set_url))
+
+			self.user2_data, self.user2_name, self.user2_id = (
+				finduser.check_user(f'{self.user2_id}/{self.user2_name}',
+									self.level_set_url))
 		else:  # Catch fail-safe
 			print('\nYou did not enter one of the options...')
 			input(utils.bold_underline('Enter anything to return to menu: '))
@@ -230,6 +234,7 @@ class UserCompare:
 
 def main():
 	"""Loads the main program and acts as a navigator."""
+	utils.check_os()
 
 	# Loads default information stored in defaults.json
 	level_set_name, level_set_url, level_set_id = utils.load_defaults()
@@ -238,13 +243,13 @@ def main():
 	level_set_data = levelset.level_set_info(level_set_id, level_set_name)
 
 	# Requests User 1 & 2 JSON files
-	user1_data, user2_data, user1_name, user2_name = finduser.search_users(
-		level_set_url)
+	user1_data, user2_data, user1_name, user2_name, user1_id, user2_id = (
+		finduser.search_users(level_set_url))
 
 	# Creates class instance using user/level data
 	compare_users = UserCompare(user1_data, user2_data, user1_name,
-								user2_name, level_set_data, level_set_name,
-								level_set_url, level_set_id)
+								user2_name, user1_id, user2_id, level_set_data,
+								level_set_name, level_set_url, level_set_id)
 
 	# Main game loop
 	while True:

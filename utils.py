@@ -1,4 +1,6 @@
 import json                    # Loading JSON file into python
+from sys import platform
+import os
 from termcolor import colored  # Colored text/terminal (bold/underline MAC only)
 
 
@@ -13,6 +15,14 @@ def bold_underline(string):
 def color_string(string, color):
 	col_string = colored(string, color)
 	return col_string
+
+
+def check_os():
+	"""Checks if user system is windows and runs color command."""
+	if platform == 'win32':
+		os.system('color')
+	elif platform == 'linux':
+		print('This version of the program does not work with Linux!')
 
 
 def header_frame_create(hlength, vlength, string, pad_adj=None):
