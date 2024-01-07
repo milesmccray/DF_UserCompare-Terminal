@@ -1,11 +1,11 @@
-from tabulate import tabulate
-import requests
+import json                    # Loading JSON file into python
+from tabulate import tabulate  # Table creation
+import requests                # Requests made to https://dustkid.com
 import utils
-import json
 
 
 def level_set_change():
-	"""For changing the level set"""
+	"""Changes Level Set information."""
 	level_sets_display = ['1) Stock Levels', '2) Community Map Pack',
 						  '3) Dustforce Custom League',
 						  '4) Backwards Dustforce',
@@ -29,6 +29,10 @@ def level_set_change():
 				  'Virtual', 'New Genesis', 'Single Screen', 'Darkforce',
 				  'Multiplayer', 'Color Dome', 'Hideout']
 
+	level_set_url = ''
+	level_set_id = ''
+	level_set_name = ''
+
 	# Creates the table(s)
 	draw_table, draw_header = create_table_level_set(level_sets_display)
 
@@ -36,24 +40,29 @@ def level_set_change():
 	print(draw_header)
 	print(draw_table)
 
-	# TODO: add fail-safe for user input
-	level_set_choice = input(utils.bold('Enter a number: '))
-
-	# Sets appropriate levelset information
-	level_set_url = level_set_urls[int(level_set_choice) - 1]
-	level_set_id = int(level_set_choice) - 1
-	level_set_name = level_sets[int(level_set_choice) - 1]
+	# Loops through level_set_choice until a correct value is given
+	while True:
+		try:
+			level_set_choice = input(utils.bold_underline('Enter a number: '))
+			# Sets appropriate levelset information
+			level_set_url = level_set_urls[int(level_set_choice) - 1]
+			level_set_id = int(level_set_choice) - 1
+			level_set_name = level_sets[int(level_set_choice) - 1]
+			break
+		except (ValueError, IndexError):
+			print('You did not enter a value between 1-16')
+			input(utils.bold_underline('Enter anything to try again: '))
+			continue
 
 	return level_set_name, level_set_url, level_set_id
 
 
 def create_table_level_set(level_set_list):
 	"""Creates a list of lists and a tabulate object and returns."""
-	header = """╔═══════════════════════════════════════════════════════╗
-║                 CHOOSE YOUR LEVEL SET                 ║
-╚═══════════════════════════════════════════════════════╝"""
+	header = utils.header_frame_create(55, 1, 'CHOOSE YOUR LEVEL SET',
+									   pad_adj=-1)
 
-	# Creates the data table
+	# Creates the level_set_display data
 	level_pair_list = []
 	all_level_sets_list = []
 	count = 0
@@ -81,9 +90,16 @@ def level_set_info(level_set_id, level_set_name):
 
 
 def level_set_get(levelset, setname):
-	"""Returns a dictionary with a value of a list containing all levels."""
-	level_records = requests.get(
-		f'https://dustkid.com/json/records/{levelset}').json()
+	"""Returns a dictionary with K:Levelset name || V:List of levels."""
+	level_records = {}
+	while True:
+		try:
+			level_records = requests.get(
+				f'https://dustkid.com/json/records/{levelset}').json()
+			break
+		except requests.exceptions.ConnectionError:
+			input("Internet Connection Error...")
+			continue
 	level_set = []
 	level_set_raw = list(level_records['Scores'].keys())
 	level_set_dict = {}
@@ -98,7 +114,7 @@ def level_set_get(levelset, setname):
 
 
 def level_set_setup():
-	"""Shouldn't need to run again unless json file messes up."""
+	"""Creates a JSON file of all levelsets -- Shouldn't need to be run again"""
 	master_level_set = []
 	level_set = level_set_get('all', 'Stock Levels')
 	master_level_set.append(level_set)
