@@ -4,7 +4,9 @@ https://dustkid.com. It pulls user-time json data based on the chosen levelset
 and displays the information in a table.<br><br>
 **NOTE: Due to the use of termcolor, this currently does not work on Linux 
 operating systems**
+
 ![Model](https://i.ibb.co/rxDDqx4/Screenshot-2024-01-07-at-10-08-05-AM.png)
+
 ## Dependencies
 [Tabulate](https://pypi.org/project/tabulate/) - Used to draw tables in 
 terminal<br>
