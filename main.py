@@ -1,4 +1,3 @@
-import os                      # Terminal Clearing
 from tabulate import tabulate  # Table creation
 import levelset
 import finduser
@@ -190,7 +189,7 @@ class UserCompare:
 		menu_nav = input(utils.bold_underline('\nEnter a number: '))
 		# Compares user times using the given levelset
 		if menu_nav == '1':  # Compare Times
-			os.system('clear||cls')
+			utils.clear()
 
 			# Gets the SS & Any% times for each user
 			user1_time_ss, user2_time_ss = self.get_level_time_ss()
@@ -203,13 +202,13 @@ class UserCompare:
 
 		# Re-requests dustkid.com and updates class variables
 		elif menu_nav == '2':  # Change Users
-			os.system('clear||cls')
+			utils.clear()
 			(self.user1_data, self.user2_data, self.user1_name,
 			 self.user2_name) = finduser.search_users(self.level_set_url)
 
 		# Re-grabs levelset json / user data and updates class variables
 		elif menu_nav == '3':  # Change Level Set
-			os.system('clear||cls')
+			utils.clear()
 
 			# Grabs the level set information depending on user choice
 			self.level_set_name, self.level_set_url, self.level_set_id = (
@@ -235,6 +234,7 @@ class UserCompare:
 def main():
 	"""Loads the main program and acts as a navigator."""
 	utils.check_os()
+	utils.clear()
 
 	# Loads default information stored in defaults.json
 	level_set_name, level_set_url, level_set_id = utils.load_defaults()
@@ -253,7 +253,7 @@ def main():
 
 	# Main game loop
 	while True:
-		os.system('clear||cls')
+		utils.clear()
 		compare_users.main_menu()
 
 

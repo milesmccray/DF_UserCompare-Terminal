@@ -23,7 +23,17 @@ def check_os():
 		os.system('color')
 	elif platform == 'linux':
 		print('This version of the program does not work with Linux!')
+	elif platform == 'darwin':
+		pass
 
+
+def clear():
+	if platform == 'win32':
+		os.system('cls')
+	elif platform == 'linux':
+		print('This version of the program does not work with Linux!')
+	elif platform == 'darwin':
+		os.system('clear')
 
 def header_frame_create(hlength, vlength, string, pad_adj=None):
 	"""Creates a box with given values."""
