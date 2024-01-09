@@ -17,6 +17,10 @@ def color_string(string, color):
 	return col_string
 
 
+def program_exit():
+	exit()
+
+
 def check_os():
 	"""Checks if user system is windows and runs color command."""
 	if platform == 'win32':
@@ -34,6 +38,7 @@ def clear():
 		print('This version of the program does not work with Linux!')
 	elif platform == 'darwin':
 		os.system('clear')
+
 
 def header_frame_create(hlength, vlength, string, pad_adj=None):
 	"""Creates a box with given values."""
