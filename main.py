@@ -173,8 +173,8 @@ class UserCompare:
 
 	def main_menu(self):
 		"""Main Menu Navigation."""
-		table = [['1) Compare Times'], ['2) Change Users'], ['3) Change Level'
-															 ' Set']]
+		table = [['1) Compare Times'], ['2) Change Users'],
+				 ['3) Change Level Set'], ['4) Exit']]
 		header = utils.header_frame_create(21, 1, 'MAIN MENU', pad_adj=-1)
 
 		# Print Main Menu Table
@@ -204,7 +204,8 @@ class UserCompare:
 		elif menu_nav == '2':  # Change Users
 			utils.clear()
 			(self.user1_data, self.user2_data, self.user1_name,
-			 self.user2_name) = finduser.search_users(self.level_set_url)
+			 self.user2_name, self.user1_id, self.user2_id) = (
+				finduser.search_users(self.level_set_url))
 
 		# Re-grabs levelset json / user data and updates class variables
 		elif menu_nav == '3':  # Change Level Set
@@ -226,6 +227,8 @@ class UserCompare:
 			self.user2_data, self.user2_name, self.user2_id = (
 				finduser.check_user(f'{self.user2_id}/{self.user2_name}',
 									self.level_set_url))
+		elif menu_nav == '4':
+			utils.program_exit()
 		else:  # Catch fail-safe
 			print('\nYou did not enter one of the options...')
 			input(utils.bold_underline('Enter anything to return to menu: '))
